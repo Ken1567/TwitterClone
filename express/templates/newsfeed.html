@@ -1,0 +1,229 @@
+{% extends 'base.html' %} {% block content %}
+<body
+  style="
+    background-color: rgb(0, 153, 255);
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS',
+      sans-serif;
+  "
+>
+  <head>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  </head>
+  <div class="container btn-outline-dark">
+    <h1 class="text-center" style="color: white">Newsfeed</h1>
+    <br />
+    {% for message in messages %}
+    <div class="d-flex justify-content-center">
+      <div class="card w-50">
+        <div class="card-body">
+          <div class="d-flex align-items-center" style="flex-direction: row">
+            <img
+              class="img-thumbnail rounded-circle d-block"
+              src="{{ message.user.profile.image.url }}"
+              alt="{{ message.user.username }} profile picture"
+              width="40"
+              height="40"
+            />
+            <small style="padding-left: 10px"
+              ><p style="color: rgb(75, 75, 255)">
+                @{{ message.user.username }}
+              </p></small
+            >
+          </div>
+          <br />
+          <div class="message">
+            <b>{{ message.message }}</b>
+            <p style="font-size: x-small">
+              {{ message.timestamp|date:"F d, Y g:i a" }}
+            </p>
+            <a
+              href="#"
+              id="comment-link-{{ message.id }}"
+              class="comment-link"
+              style="font-size: smaller"
+              >Comment</a
+            >
+            <form
+              method="post"
+              action="{% url 'add_comment' message.id %}"
+              id="comment-form-{{ message.id }}"
+              class="comment-form"
+              style="display: none"
+            >
+              {% csrf_token %}
+              <div class="form-group">
+                <textarea
+                  class="form-control comment-textarea"
+                  name="comment"
+                  placeholder="Add a comment"
+                  required="true"
+                ></textarea>
+              </div>
+              <br />
+              <input
+                type="submit"
+                value="Post Comment"
+                class="submit-comment btn btn-primary btn-sm"
+                style="
+                  --bs-btn-padding-y: 0.25rem;
+                  --bs-btn-padding-x: 0.5rem;
+                  --bs-btn-font-size: 0.75rem;
+                  font-family: 'Gill Sans', 'Gill Sans MT', Calibri,
+                    'Trebuchet MS', sans-serif;
+                "
+              />
+              <br /><br />
+              <div
+                class="comments-container"
+                id="comments-container-{{ message.id }}"
+                style="display: none"
+              >
+                {% for comment in message.comments.all %}
+                <div class="card mb-3">
+                  <div class="card-body">
+                    <div
+                      class="d-flex align-items-center"
+                      style="flex-direction: row"
+                    >
+                      <img
+                        class="img-thumbnail rounded-circle d-block"
+                        src="{{ comment.user.profile.image.url }}"
+                        width="40"
+                        height="40"
+                        alt="{{ comment.user.username }} profile picture"
+                      />
+                      <small style="padding-left: 10px"
+                        ><p class="card-title" style="color: rgb(75, 75, 255)">
+                          {{ comment.user.username }}
+                        </p></small
+                      >
+                    </div>
+                    <br />
+                    <b>{{ comment.comment }}</b>
+                    <p class="card-text" style="font-size: x-small">
+                      {{ comment.timestamp }}
+                    </p>
+                    {% if comment.user == user %}
+                    <a
+                      href="{% url 'delete_comment' comment.id %}"
+                      class="btn btn-danger btn-sm"
+                      style="
+                        --bs-btn-padding-y: 0.25rem;
+                        --bs-btn-padding-x: 0.5rem;
+                        --bs-btn-font-size: 0.75rem;
+                        font-family: 'Gill Sans', 'Gill Sans MT', Calibri,
+                          'Trebuchet MS', sans-serif;
+                      "
+                      >Delete</a
+                    >
+                    {% endif %}
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <br />
+    {% endfor %}
+  </div>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const commentLinks = document.querySelectorAll(".comment-link");
+      for (let link of commentLinks) {
+        link.addEventListener("click", function (event) {
+          event.preventDefault();
+          let messageId = event.target.id.split("-")[2];
+          let commentsContainer = document.querySelector(
+            `#comments-container-${messageId}`
+          );
+          let formId = `comment-form-${event.target.id.split("-")[2]}`;
+          let form = document.getElementById(formId);
+          if (form.style.display === "none") {
+            form.style.display = "block";
+            commentsContainer.style.display = "block";
+          } else {
+            form.style.display = "none";
+            commentsContainer.style.display = "none";
+          }
+        });
+      }
+
+      // Handle form submission for adding a comment
+      const commentForms = document.querySelectorAll(".comment-form");
+      for (let form of commentForms) {
+        form.addEventListener("submit", function (event) {
+          event.preventDefault();
+          let formData = new FormData(form);
+          let messageId = form.id.split("-")[2];
+          let commentsContainer = document.querySelector(
+            `#comments-container-${messageId}`
+          );
+          let commentTextArea = form.querySelector(".comment-textarea");
+
+          // Make a POST request to the server to add the comment
+          fetch(form.action, {
+            method: "POST",
+            body: formData,
+            headers: {
+              "X-CSRFToken": form.querySelector(
+                "input[name='csrfmiddlewaretoken']"
+              ).value,
+            },
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              let commentHTML = `
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex align-items-center" style="flex-direction: row">
+                    <img class="img-thumbnail rounded-circle d-block" src="${data.user_image_url}" width="40" height="40" alt="${data.user} profile picture">
+                    <small style="padding-left: 10px">
+                        <p class="card-title" style="color: rgb(75, 75, 255)">
+                            ${data.user}
+                        </p>
+                    </small>
+                </div>
+                <br>
+                <b>${data.comment}</b>
+                <p class="card-text" style="font-size: x-small">
+                    ${data.timestamp}
+                </p>
+            </div>
+        </div>
+    `;
+              commentsContainer.insertAdjacentHTML("beforeend", commentHTML);
+              commentTextArea.value = "";
+              commentsContainer.style.display = "block";
+            });
+        });
+      }
+      // Handle click event for deleting a comment
+      const deleteButtons = document.querySelectorAll(".btn-danger");
+      for (let button of deleteButtons) {
+        button.addEventListener("click", function (event) {
+          event.preventDefault();
+          if (confirm("Are you sure you want to delete this comment?")) {
+            // Make a DELETE request to the server to delete the comment
+            fetch(event.target.href, {
+              method: "DELETE",
+              headers: {
+                "X-CSRFToken": document.querySelector(
+                  "input[name='csrfmiddlewaretoken']"
+                ).value,
+              },
+            })
+              .then((response) => response.json())
+              .then((data) => {
+                // Remove the comment element from the page
+                event.target.closest(".card").remove();
+              });
+          }
+        });
+      }
+    });
+  </script>
+</body>
+{% endblock %}

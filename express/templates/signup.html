@@ -1,0 +1,56 @@
+{% extends 'base.html' %} {% block content %}
+<div 
+  class="card border-0" 
+    style="font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS',
+    sans-serif;">
+  <form method="post" class="mx-auto">
+    {% csrf_token %}
+    <div class="form-group">
+      <label for="{{ form.username.id_for_label }}"><h5>Username:</h5></label>
+      <br />
+      {{ form.username }} 
+      {% if form.username.errors %} 
+        {% for error in form.username.errors %}
+          <div class="text-danger">{{ error }}</div>
+        {% endfor %} 
+      {% endif %}
+    </div>
+    <br />
+    <div class="form-group">
+      <label for="{{ form.email.id_for_label }}"><h5>Email:</h5></label> <br />
+      {{ form.email }}
+      {% if form.email.errors %}
+        {% for error in form.email.errors %}
+            <div class="text-danger">{{ error }}</div>
+        {% endfor %}
+      {% endif %}
+    </div>
+    <br />
+    <div class="form-group">
+      <label for="{{ form.password.id_for_label }}"><h5>Password:</h5></label>
+      <br />
+      {{ form.password }}
+      {% if form.password.errors %}
+        {% for error in form.password.errors %}
+            <div class="text-danger">{{ error }}</div>
+        {% endfor %}
+      {% endif %}
+    </div>
+    <br />
+    <div class="form-group">
+      <label for="{{ form.password2.id_for_label }}"
+        ><h5>Confirm Password:</h5></label
+      >
+      <br />
+      {{ form.password2 }}
+      {% if form.password2.errors %}
+        {% for error in form.password2.errors %}
+            <div class="text-danger">{{ error }}</div>
+        {% endfor %}
+      {% endif %}
+    </div>
+    <br />
+    <button type="submit" class="btn btn-primary fw-bolder">Signup</button>
+  </form>
+</div>
+{% endblock %}

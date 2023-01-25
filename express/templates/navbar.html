@@ -1,0 +1,113 @@
+<head>
+  <script
+    src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+    integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+    crossorigin="anonymous"
+  ></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script
+    src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+    integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+    crossorigin="anonymous"
+  ></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+    integrity="sha384-9/reFTGAWuYWrkQOJQTJzR3zTJzS3a3q6ZsZ3a3Zs+4uYjfU6yS+L2x/Kjcfj6kx"
+    crossorigin="anonymous"
+  ></script>
+</head>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="{% url 'home' %}">
+      <img
+        src="https://cdn.freelogodesign.org/files/623e8dd867994dc9b867baf86d7a19ca/thumb/logo_200x200.png?v=637946704740000000"
+        width="30"
+        height="30"
+        class="rounded-circle"
+      />
+    </a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-toggle="collapse"
+      data-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        {% if user.is_authenticated %} {% if request.path == '/newsfeed/' %}
+        <li class="nav-item">
+          <a
+            class="nav-link active btn btn-primary fw-bolder"
+            style="
+              font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS',
+                sans-serif;
+            "
+            aria-current="page"
+            href="{% url 'dashboard' %}"
+            >Dashboard</a
+          >
+        </li>
+        {% else %}
+        <li class="nav-item">
+          <a
+            class="nav-link active btn btn-primary fw-bolder"
+            style="
+              font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS',
+                sans-serif;
+            "
+            aria-current="page"
+            href="{% url 'newsfeed' %}"
+            >Newsfeed</a
+          >
+        </li>
+        {% endif %}
+      </ul>
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a
+            class="nav-link active btn btn-danger fw-bolder"
+            style="
+              font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS',
+                sans-serif;
+            "
+            aria-current="page"
+            href="{% url 'logout' %}"
+            >Logout</a
+          >
+        </li>
+      </ul>
+      {% else %}
+      <li class="nav-item">
+        <a
+          class="nav-link active btn btn-close-white fw-bolder"
+          style="
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS',
+              sans-serif;
+            margin-right: 10px;
+          "
+          aria-current="page"
+          href="{% url 'login' %}"
+          >Login</a
+        >
+      </li>
+      <li class="nav-item">
+        <a
+          class="nav-link active btn btn-close-white fw-bolder"
+          style="
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS',
+              sans-serif;
+          "
+          aria-current="page"
+          href="{% url 'signup' %}"
+          >Signup</a
+        >
+      </li>
+      {% endif %}
+    </div>
+  </div>
+</nav>
